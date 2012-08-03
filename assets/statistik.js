@@ -153,6 +153,9 @@ STUDIP.statistik.showData = function (category, json) {
     //Daten schreiben
     var bar = new RGraph.Bar(category + '_diagramm', json.anzahl);
     bar.Set('chart.labels', json.institut_namen);
+    bar.Set('chart.ylabels', true);
+    bar.Set('chart.title', category_names[category]);
+    //bar.Set('chart.title.hpos', 0.13);
     if (!RGraph.isIE8()) {
         bar.Set('chart.tooltips', json.institut_namen);
     }

@@ -60,7 +60,11 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
             "doz_aktivitaet_dokumente" => _("Dozenaktivitäten: Dokumente"),
             "doz_aktivitaet_forum" => _("Dozenaktivitäten: Forum"),
             "doz_aktivitaet_wiki" => _("Dozenaktivitäten: Wiki"),
-            "doz_aktivitaet_sum" => _("Dozenaktivitäten: Insgesamt")
+            "doz_aktivitaet_sum" => _("Dozenaktivitäten: Insgesamt"),
+            "stud_aktivitaet_dokumente" => _("Studentenaktivitäten: Dokumente"),
+            "stud_aktivitaet_forum" => _("Studentenaktivitäten: Forum"),
+            "stud_aktivitaet_wiki" => _("Studentenaktivitäten: Wiki"),
+            "stud_aktivitaet_sum" => _("Studentenaktivitäten: Insgesamt")
         );
     }
 
@@ -325,6 +329,7 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
             "WHERE Institute.$field = :institut_id " .
                 "AND user_inst.inst_perms = 'dozent' " .
         "");
+        
         $this->statements['doz_aktivitaet_dokumente'] = $db->prepare(
             "SELECT COUNT(DISTINCT user_inst.user_id) " .
             "FROM user_inst " .
@@ -367,6 +372,50 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
                 "AND object_user_visits.visitdate >= :start " .
                 "AND object_user_visits.visitdate <= :ende " .
                 "AND user_inst.inst_perms = 'dozent' " .
+        "");
+
+        $this->statements['stud_aktivitaet_dokumente'] = $db->prepare(
+            "SELECT COUNT(DISTINCT user_inst.user_id) " .
+            "FROM user_inst " .
+                "INNER JOIN object_user_visits ON (object_user_visits.user_id = user_inst.user_id) " .
+                "INNER JOIN Institute ON (Institute.Institut_id = user_inst.Institut_id) " .
+            "WHERE Institute.$field = :institut_id " .
+                "AND object_user_visits.type = 'documents' " .
+                "AND object_user_visits.visitdate >= :start " .
+                "AND object_user_visits.visitdate <= :ende " .
+                "AND user_inst.inst_perms IN ('tutor','autor') " .
+        "");
+        $this->statements['stud_aktivitaet_forum'] = $db->prepare(
+            "SELECT COUNT(DISTINCT object_user_visits.object_id, object_user_visits.user_id) " .
+            "FROM user_inst " .
+                "INNER JOIN object_user_visits ON (object_user_visits.user_id = user_inst.user_id) " .
+                "INNER JOIN Institute ON (Institute.Institut_id = user_inst.Institut_id) " .
+            "WHERE Institute.$field = :institut_id " .
+                "AND object_user_visits.type = 'forum' " .
+                "AND object_user_visits.visitdate >= :start " .
+                "AND object_user_visits.visitdate <= :ende " .
+                "AND user_inst.inst_perms IN ('tutor','autor') " .
+        "");
+        $this->statements['stud_aktivitaet_wiki'] = $db->prepare(
+            "SELECT COUNT(DISTINCT object_user_visits.object_id, object_user_visits.user_id) " .
+            "FROM user_inst " .
+                "INNER JOIN object_user_visits ON (object_user_visits.user_id = user_inst.user_id) " .
+                "INNER JOIN Institute ON (Institute.Institut_id = user_inst.Institut_id) " .
+            "WHERE Institute.$field = :institut_id " .
+                "AND object_user_visits.type = 'wiki' " .
+                "AND object_user_visits.visitdate >= :start " .
+                "AND object_user_visits.visitdate <= :ende " .
+                "AND user_inst.inst_perms IN ('tutor','autor') " .
+        "");
+        $this->statements['stud_aktivitaet_sum'] = $db->prepare(
+            "SELECT COUNT(DISTINCT object_user_visits.object_id, object_user_visits.user_id) " .
+            "FROM user_inst " .
+                "INNER JOIN object_user_visits ON (object_user_visits.user_id = user_inst.user_id) " .
+                "INNER JOIN Institute ON (Institute.Institut_id = user_inst.Institut_id) " .
+            "WHERE Institute.$field = :institut_id " .
+                "AND object_user_visits.visitdate >= :start " .
+                "AND object_user_visits.visitdate <= :ende " .
+                "AND user_inst.inst_perms IN ('tutor','autor') " .
         "");
     }
 }

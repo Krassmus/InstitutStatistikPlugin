@@ -112,7 +112,11 @@
             "doz_aktivitaet_dokumente" => "file",
             "doz_aktivitaet_forum" => "forum",
             "doz_aktivitaet_wiki" => "wiki",
-            "doz_aktivitaet_sum" => "file"
+            "doz_aktivitaet_sum" => "file",
+            "stud_aktivitaet_dokumente" => "file",
+            "stud_aktivitaet_forum" => "forum",
+            "stud_aktivitaet_wiki" => "wiki",
+            "stud_aktivitaet_sum" => "file"
         );
         $colors = array(
             "veranstaltungen" => "255,0,0",
@@ -126,7 +130,11 @@
             "doz_aktivitaet_dokumente" => "255,0,120",
             "doz_aktivitaet_forum" => "255,120,0",
             "doz_aktivitaet_wiki" => "120,0,255",
-            "doz_aktivitaet_sum" => "100,0,0"
+            "doz_aktivitaet_sum" => "100,0,0",
+            "stud_aktivitaet_dokumente" => "255,0,120",
+            "stud_aktivitaet_forum" => "255,120,0",
+            "stud_aktivitaet_wiki" => "120,0,255",
+            "stud_aktivitaet_sum" => "100,0,0"
         );
 
         $anzahl = array();
