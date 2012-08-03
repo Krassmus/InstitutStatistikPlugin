@@ -23,6 +23,18 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // +---------------------------------------------------------------------------+
 
+if (!function_exists("l")) {
+    function l ($text) {
+        gettext($text);
+    }
+}
+if (!function_exists("ll")) {
+    function ll ($text) {
+        gettext($text);
+    }
+}
+
+require_once 'lib/classes/exportdocument/ExportPDF.class.php';
 
 class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
 
@@ -34,10 +46,8 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
      */
     function __construct() {
         parent::__construct();
-        if ($GLOBALS['perm']->have_perm('root')) {
-            $navigation = new AutoNavigation(_("Institut-Statistik"), PluginEngine::getURL($this, array(), "show"));
-            Navigation::addItem('/tools/'.get_class($this), $navigation);
-        }
+        $navigation = new AutoNavigation(_("Institut-Statistik"), PluginEngine::getURL($this, array(), "show"));
+        Navigation::addItem('/tools/'.get_class($this), $navigation);
         $this->categories = array(
             "veranstaltungen" => _("Anzahl Veranstaltungen"),
             "dokumente" => _("Hochgeladene Dokumente"),
@@ -66,7 +76,8 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
             'RGraph.common.resizing.js',
             'RGraph.common.tooltips.js',
             'RGraph.common.zoom.js',
-            'RGraph.bar.js'
+            'RGraph.bar.js',
+            'statistik.js'
         );
         foreach ($rgraph_file as $rgraph_file) {
             PageLayout::addHeadElement(
@@ -78,25 +89,27 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
 
         $db = DBManager::get();
 
-        $institute = $db->query(
-            "SELECT Institut_id, Name " .
-            "FROM Institute " .
-            "ORDER BY Name ASC " .
+        $inst = $db->query(
+            "SELECT i.Institut_id, i.Name, IF(i.fakultaets_id = i.Institut_id,1,0) AS is_fak " .
+            "FROM Institute as i " .
+                "INNER JOIN Institute AS f ON (i.fakultaets_id = f.Institut_id) " .
+            "ORDER BY f.Name ASC, i.Name ASC " .
         "")->fetchAll(PDO::FETCH_ASSOC);
-        $data = array();
-        
-        foreach ($institute as $institut) {
+        $institute = $data = array();
+
+        foreach ($inst as $institut) {
             $data[$institut['Institut_id']] = array(
                 'name' => $institut['Name']
             );
+            $institute[$institut['Institut_id']] = array(
+                'name' => $institut['Name'],
+                'is_fak' => $institut['is_fak']
+            );
         }
-        $fakultaeten = $db->query(
-            "SELECT * FROM Institute WHERE fakultaets_id = Institut_id " .
-        "")->fetchAll(PDO::FETCH_ASSOC);
 
         $template = $this->getTemplate("statistik.php");
         $template->set_attribute("statistik_data", $data);
-        $template->set_attribute("fakultaeten", $fakultaeten);
+        $template->set_attribute("institute", $inst);
         $template->set_attribute('categories', $this->categories);
         $template->set_attribute("semester", $db->query("SELECT * FROM semester_data ORDER BY beginn")->fetchAll(PDO::FETCH_ASSOC));
         print $template->render();
@@ -108,27 +121,38 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
         }
         $db = DBManager::get();
 
-        if (Request::get("semester_id")) {
+        $start = 0;
+        $ende = 86400 * 365 * 60;
+        if (Request::get("start_semester_id")) {
             $semester = $db->query(
-                "SELECT * FROM semester_data WHERE semester_id = ".$db->quote(Request::option("semester_id"))." " .
+                "SELECT * FROM semester_data WHERE semester_id = ".$db->quote(Request::option("start_semester_id"))." " .
             "")->fetch(PDO::FETCH_ASSOC);
             $start = $semester['beginn'];
+        }
+        if (Request::get("end_semester_id")) {
+            $semester = $db->query(
+                "SELECT * FROM semester_data WHERE semester_id = ".$db->quote(Request::option("end_semester_id"))." " .
+            "")->fetch(PDO::FETCH_ASSOC);
             $ende = $semester['ende'];
-        } elseif(Request::get("start") && Request::get("ende")) {
-            $start = Request::int("start");
-            $ende = Request::int("ende");
-        } else {
-            $start = 0;
-            $ende = 86400 * 365 * 60;
         }
 
-        if (Request::get("fakultaets_id")) {
-            $institute = $db->query(
-                "SELECT Institut_id, Name " .
+        if (Request::get("institut_id")) {
+            $institut = $db->query(
+                "SELECT * " .
                 "FROM Institute " .
-                "WHERE fakultaets_id = ".$db->quote(Request::option("fakultaets_id"))." " .
+                "WHERE Institut_id = ".$db->quote(Request::option("institut_id"))." " .
                 "ORDER BY Name ASC " .
-            "")->fetchAll(PDO::FETCH_ASSOC);
+            "")->fetch(PDO::FETCH_ASSOC);
+            if ($institut['Institut_id'] === $institut['fakultaets_id']) {
+                $institute = $db->query(
+                    "SELECT Institut_id, Name " .
+                    "FROM Institute " .
+                    "WHERE fakultaets_id = ".$db->quote(Request::option("institut_id"))." " .
+                    "ORDER BY Name ASC " .
+                "")->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                $institute = array($institut);
+            }
         } else {
             $institute = $db->query(
                 "SELECT Institut_id, Name " .
@@ -141,7 +165,7 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
         
         $output = array();
         $category = Request::get("category");
-        $this->prepare_statements(!Request::get("fakultaets_id"));
+        $this->prepare_statements(!Request::get("institut_id"));
         foreach ($institute as $institut) {
             if ($category === "dozenten") {
                 $this->statements[$category]->execute(array(
@@ -160,6 +184,46 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
         }
 
         echo json_encode($output);
+    }
+
+    public function pdf_action() {
+        $graphs = Request::getArray("graphs");
+        if ($graphs['csv']) {
+            $csv = $graphs['csv'];
+            unset($graphs['csv']);
+        }
+        foreach ($graphs as $key => $g) {
+            $g = substr($g, strpos($g, ",") + 1);
+            $graphs[$key] = base64_decode($g);
+        }
+        $pdf = new ExportPDF("L");
+        $pdf->setHeaderTitle("Statistik");
+        foreach ($graphs as $key => $g) {
+            $pdf->setHeaderSubtitle($this->categories[$key]);
+            if ($key < 1) {
+                $pdf->addPage("L");
+            }
+            $pdf->Image("@".$g);
+        }
+        if ($csv) {
+            $csv = json_decode($csv);
+            $pdf->setHeaderSubtitle("Tabellarische Übersicht");
+            $pdf->addPage("L");
+            foreach ($csv as $key => $line) {
+                $csv[$key] = "| " . implode(" | ", $line). " |";
+            }
+            $csv = studip_utf8decode(implode("\n", $csv));
+            $pdf->SetFontSize("8px");
+            $pdf->addContent($csv);
+        }
+
+        $pdf->dispatch("statistik");
+    }
+
+    public function file_action() {
+        header("Content-Type: ".Request::get("mime_type"));
+        header("Content-Disposition: Attachment; filename=".studip_utf8decode(Request::get("filename")));
+        echo studip_utf8decode(Request::get("content"));
     }
 
     protected function getDisplayName() {
