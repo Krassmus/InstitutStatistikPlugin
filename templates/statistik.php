@@ -9,18 +9,27 @@
         background-color: #f3f3f3;
         border-radius: 10px;
         box-shadow: 0px 0px 4px #d0d0d0;
-        width: 400px;
+        width: 90%;
         margin-left: auto;
         margin-right: auto;
+        border-collapse: collapse;
+    }
+    #setup_table tr > td {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border-top: #999999 thin solid;
+    }
+    #setup_table tr:first-child > td, #setup_table tr:last-child > td {
+        border-top: none;
     }
 </style>
 <table id="setup_table" align="center">
     <tbody>
         <tr>
-            <td><label for="institut_id"><?= l("Nach Institut") ?></label></td>
+            <td><label for="institut_id"><?= _("Nach Institut") ?></label></td>
             <td>
                 <select name="institut_id" id="institut_id">
-                    <option value=""><?= l("alle Fakultäten") ?></option>
+                    <option value=""><?= _("alle Fakultäten") ?></option>
                     <? foreach ($institute as $institut) : ?>
                     <option value="<?= $institut['Institut_id'] ?>"><?= (!$institut['is_fak'] ? "&nbsp;&nbsp;&nbsp;&nbsp;" : "").htmlReady($institut['Name']) ?></option>
                     <? endforeach ?>
@@ -28,17 +37,17 @@
             </td>
         </tr>
         <tr>
-            <td><label for="semester_id"><?= l("Semester") ?></label></td>
+            <td><label for="semester_id"><?= _("Semester") ?></label></td>
             <td>
                 <select id="start_semester_id" name="start_semester_id" onChange="STUDIP.statistik.switch_semester();">
-                    <option value=""><?= ll("unbegrenzt") ?></option>
+                    <option value=""><?= _("unbegrenzt") ?></option>
                     <? foreach ($semester as $sem) : ?>
                     <option data-start="<?= $sem['beginn'] ?>" value="<?= $sem['semester_id'] ?>"<?= Request::get("semester_id") === $sem['semester_id'] ? " selected" : "" ?>><?= htmlReady($sem['name']) ?></option>
                     <? endforeach ?>
                 </select>
-                <?= l("bis") ?>
+                <?= _("bis") ?>
                 <select id="end_semester_id" name="end_semester_id" onChange="STUDIP.statistik.switch_semester();">
-                    <option value=""><?= ll("unbegrenzt") ?></option>
+                    <option value=""><?= _("unbegrenzt") ?></option>
                     <? foreach ($semester as $sem) : ?>
                     <option data-start="<?= $sem['beginn'] ?>" value="<?= $sem['semester_id'] ?>"<?= Request::get("semester_id") === $sem['semester_id'] ? " selected" : "" ?>><?= htmlReady($sem['name']) ?></option>
                     <? endforeach ?>
@@ -46,7 +55,7 @@
             </td>
         </tr>
         <tr>
-            <td><?= l("Kategorien") ?></td>
+            <td><?= _("Kategorien") ?></td>
             <td>
                 <? foreach ($categories as $category => $category_name) : ?>
                 <label>
@@ -57,23 +66,23 @@
             </td>
         </tr>
         <tr>
-            <td><?= l("Ausgabe") ?></td>
+            <td><?= _("Ausgabe") ?></td>
             <td>
                 <label>
                     <input type="radio" name="output_format" value="web" checked>
-                    <?= l("Auf Webseite darstellen") ?>
+                    <?= _("Auf Webseite darstellen") ?>
                 </label><br>
                 <label>
                     <input type="radio" name="output_format" value="pdf_stat">
-                    <?= l("PDF mit Grafiken und Statistiken") ?>
+                    <?= _("PDF mit Grafiken und Statistiken") ?>
                 </label><br>
                 <label>
                     <input type="radio" name="output_format" value="pdf">
-                    <?= l("PDF mit Grafiken") ?>
+                    <?= _("PDF mit Grafiken") ?>
                 </label><br>
                 <label>
                     <input type="radio" name="output_format" value="csv">
-                    <?= l("CSV mit Statistik") ?>
+                    <?= _("CSV mit Statistik") ?>
                 </label><br>
             </td>
         </tr>
@@ -94,7 +103,7 @@
 </table>
 
 <div id="html_output" style="display: none;">
-    <h2><?= l("Diagramme") ?></h2>
+    <h2><?= _("Diagramme") ?></h2>
     <div id="accordion">
         <?
         $institut_namen = array();
@@ -144,12 +153,12 @@
         <h3><?= Assets::img("icons/16/grey/".$icons[$category].".png", array('class' => "text-top"))." ".$string ?></h3>
         <div>
             <canvas id="<?= $category ?>_diagramm" width="1000" height="700">
-                <?= ll("Diagramm konnte nicht dargestellt werden. Versuchen Sie einen anderen Browser wie zum Beispiel Firefox.") ?>
+                <?= _("Diagramm konnte nicht dargestellt werden. Versuchen Sie einen anderen Browser wie zum Beispiel Firefox.") ?>
             </canvas>
         </div>
         <? endforeach ?>
 
-        <h2><?= l("Daten nach Instituten") ?></h2>
+        <h2><?= _("Daten nach Instituten") ?></h2>
         <div id="institut_data">
         </div>
     </div>

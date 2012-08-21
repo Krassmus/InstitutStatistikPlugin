@@ -3,4 +3,4 @@ pluginname=InstitutStatistikPlugin
 origin=data-quest
 version=2.0
 studipMinVersion=2.0
-studipMinVersion=2.99
+studipMaxVersion=2.99
