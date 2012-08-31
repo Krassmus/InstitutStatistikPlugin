@@ -224,6 +224,20 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
         echo studip_utf8decode(Request::get("content"));
     }
 
+    public function csv_action() {
+        $data = Request::getArray("content");
+        foreach ($data as $key1 => $line) {
+            foreach ($line as $key2 => $cell) {
+                $line[$key2] = str_replace('"', '""', studip_utf8decode($cell));
+            }
+            $data[$key1] = '"'.implode('";"', $line).'"';
+        }
+        $data = implode("\n", $data);
+        header("Content-Type: text/csv");
+        header("Content-Disposition: Attachment; filename=statistik.csv");
+        echo $data;
+    }
+
     protected function getDisplayName() {
         return get_class($this);
     }
