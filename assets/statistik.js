@@ -178,7 +178,7 @@ STUDIP.statistik.showData = function (category, json) {
     bar.Set('chart.strokecolor', 'rgba(' + colors[category] + ',0.5)');
     bar.Set('chart.text.angle', 65);
     bar.Set('chart.text.size', 8);
-    bar.Set('chart.resizable', true);
+    bar.Set('chart.resizable', false);
     bar.Draw();
 
     jQuery.each(json.institut_namen, function (index, institut) {
