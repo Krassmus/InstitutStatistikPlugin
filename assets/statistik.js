@@ -102,7 +102,7 @@ STUDIP.statistik.fetch_data_recursively = function (category, start_semester_id,
                     });
                     data[index1] = '"' + line.join('";"') + '"';
                 });
-                data = data.join("\n");
+                data = data.join(String.fromCharCode(13));
                 //location.href = "data:text/csv;charset=CP-1252;Content-Disposition:attachment;filename=statistik.csv," + encodeURIComponent(data);
                 location.href = STUDIP.URLHelper.getURL(ajax_url + "/file", {
                     'mime_type': "text/csv",
