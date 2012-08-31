@@ -127,7 +127,7 @@ STUDIP.statistik.download = function(url, data, method){
 			inputs += '<input type="hidden" name="graphs['+ category +']" value="'+ image.replace(/"/g, '&quot;') +'" />';
 		});
 		//send request
-		jQuery('<form accept-charset=utf-8 action="'+ url +'" method="'+ (method||'post') +'">'+inputs+'</form>')
+		jQuery('<form accept-charset=utf-8 target="_blank" action="'+ url +'" method="'+ (method||'post') +'">'+inputs+'</form>')
 		.appendTo('body').submit().remove();
 	};
 };
