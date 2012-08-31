@@ -58,7 +58,6 @@ STUDIP.statistik.fetch_data_recursively = function (category, start_semester_id,
         //alles geladen, jetzt noch verpacken und präsentieren
         if (output_format === "web") {
             jQuery.each(categories, function (index, cat) {
-                console.log(cat);
                 if (jQuery.inArray(cat, STUDIP.statistik.categories) > -1) {
                     jQuery(".category_" + cat).show();
                 } else {
@@ -165,7 +164,7 @@ STUDIP.statistik.showData = function (category, json) {
     bar.Set('chart.title', category_names[category]);
     //bar.Set('chart.title.hpos', 0.13);
     if (!RGraph.isIE8()) {
-        bar.Set('chart.tooltips', json.institut_namen);
+        //bar.Set('chart.tooltips', json.institut_namen);
     }
     bar.Set('chart.gutter.left', 45);
     bar.Set('chart.gutter.bottom', 400);
