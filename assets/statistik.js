@@ -163,9 +163,7 @@ STUDIP.statistik.showData = function (category, json) {
     bar.Set('chart.ylabels', true);
     bar.Set('chart.title', category_names[category]);
     //bar.Set('chart.title.hpos', 0.13);
-    if (!RGraph.isIE8()) {
-        //bar.Set('chart.tooltips', json.institut_namen);
-    }
+    bar.Set('chart.tooltips.override', function () {});
     bar.Set('chart.gutter.left', 45);
     bar.Set('chart.gutter.bottom', 400);
     bar.Set('chart.background.grid', true);
