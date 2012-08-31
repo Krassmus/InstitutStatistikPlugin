@@ -225,7 +225,7 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
     }
 
     public function csv_action() {
-        $data = Request::getArray("content");
+        $data = json_decode(Request::get("content"));
         foreach ($data as $key1 => $line) {
             foreach ($line as $key2 => $cell) {
                 $line[$key2] = str_replace('"', '""', studip_utf8decode($cell));

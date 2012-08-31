@@ -96,9 +96,7 @@ STUDIP.statistik.fetch_data_recursively = function (category, start_semester_id,
                 STUDIP.statistik.download(ajax_url + "/pdf", graphs, "post");
             }
             if (output_format === "csv") {
-                location.href = STUDIP.URLHelper.getURL(ajax_url + "/csv", {
-                    'content': data
-                });
+                STUDIP.statistik.download_csv(STUDIP.URLHelper.getURL(ajax_url + "/csv"), JSON.stringify(data), "POST");
                 /*jQuery.each(data, function (index1, line) {
                     jQuery.each(line, function (index2, value) {
                         line[index2] = value.replace('"', '""');
@@ -117,6 +115,16 @@ STUDIP.statistik.fetch_data_recursively = function (category, start_semester_id,
         STUDIP.statistik.already_loading = false;
         jQuery("#progressbar").hide();
     }
+};
+
+STUDIP.statistik.download_csv = function(url, data, method){
+	//url and data options required
+	if( url && data ){
+        var inputs = '<input type="hidden" name="content" value="'+ data.replace(/"/g, '&quot;') +'" />';
+		//send request
+		jQuery('<form accept-charset=utf-8 target="_blank" action="'+ url +'" method="'+ (method||'post') +'">'+inputs+'</form>')
+		.appendTo('body').submit().remove();
+	};
 };
 
 STUDIP.statistik.download = function(url, data, method){
