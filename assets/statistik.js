@@ -57,6 +57,14 @@ STUDIP.statistik.fetch_data_recursively = function (category, start_semester_id,
     } else {
         //alles geladen, jetzt noch verpacken und präsentieren
         if (output_format === "web") {
+            jQuery.each(categories, function (index, cat) {
+                console.log(cat);
+                if (jQuery.inArray(cat, STUDIP.statistik.categories) > -1) {
+                    jQuery(".category_" + cat).show();
+                } else {
+                    jQuery(".category_" + cat).hide();
+                }
+            });
             jQuery("#html_output").fadeIn();
             jQuery("#accordion").accordion({
                 'autoHeight': false,

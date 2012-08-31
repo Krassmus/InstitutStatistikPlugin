@@ -69,9 +69,6 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
     }
 
     function show_action($choice = '') {
-        if (!$GLOBALS['perm']->have_perm('root')) {
-            throw new AccessDeniedException("Keine Berechtigung");
-        }
         $rgraph_file = array(
             'RGraph.common.core.js',
             'RGraph.common.adjusting.js',
@@ -120,9 +117,6 @@ class InstitutStatistikPlugin extends StudIPPlugin implements SystemPlugin {
     }
 
     public function fetch_data_action() {
-        if (!$GLOBALS['perm']->have_perm('root')) {
-            throw new AccessDeniedException("Keine Berechtigung");
-        }
         $db = DBManager::get();
 
         $start = 0;

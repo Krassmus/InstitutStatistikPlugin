@@ -150,8 +150,8 @@
         ?>
 
         <? foreach ($categories as $category => $string) : ?>
-        <h3><?= Assets::img("icons/16/grey/".$icons[$category].".png", array('class' => "text-top"))." ".$string ?></h3>
-        <div>
+        <h3 class="category_<?= $category ?>"><?= Assets::img("icons/16/grey/".$icons[$category].".png", array('class' => "text-top"))." ".$string ?></h3>
+        <div class="category_<?= $category ?>">
             <canvas id="<?= $category ?>_diagramm" width="1000" height="700">
                 <?= _("Diagramm konnte nicht dargestellt werden. Versuchen Sie einen anderen Browser wie zum Beispiel Firefox.") ?>
             </canvas>
