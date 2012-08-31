@@ -117,13 +117,15 @@ STUDIP.statistik.fetch_data_recursively = function (category, start_semester_id,
     }
 };
 
-STUDIP.statistik.download_csv = function(url, data, method){
+STUDIP.statistik.download_csv = function(url, data, method) {
 	//url and data options required
 	if( url && data ){
         var inputs = '<input type="hidden" name="content" value="'+ data.replace(/"/g, '&quot;') +'" />';
 		//send request
 		jQuery('<form accept-charset=utf-8 target="_blank" action="'+ url +'" method="'+ (method||'post') +'">'+inputs+'</form>')
-		.appendTo('body').submit().remove();
+            .appendTo('body')
+            .submit()
+            .remove();
 	};
 };
 

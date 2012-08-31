@@ -9,7 +9,7 @@
         background-color: #f3f3f3;
         border-radius: 10px;
         box-shadow: 0px 0px 4px #d0d0d0;
-        width: 90%;
+        width: 60%;
         margin-left: auto;
         margin-right: auto;
         border-collapse: collapse;
